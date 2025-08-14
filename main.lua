@@ -13,24 +13,25 @@ end
 
 local lilKaktus = love.graphics.newImage("kaktus.png")
 
-local player = {spr = lilKaktus, x = 100, y = 100, sx = .2, sy = .2}
+function love.load() 
+    love.graphics.setBackgroundColor({1,1,1})
+
+end
+
+local player = {spr = lilKaktus, x = 100, y = 100, sx = 0.2, sy = 0.2, spd = 200}
 
 function love.update(dt)
     if love.keyboard.isDown("right") then
-        player.x = player.x + 100 * dt
-        player.sx = player.sx + .1 * dt
+        player.x = player.x + player.spd * dt
     end
     if love.keyboard.isDown("left") then
-        player.x = player.x - 100 * dt
-        player.sx = player.sx - .1 * dt
+        player.x = player.x - player.spd * dt
     end
     if love.keyboard.isDown("up") then
-        player.y = player.y - 100 * dt
-        player.sy = player.sy + .1 * dt
+        player.y = player.y - player.spd * dt
     end
     if love.keyboard.isDown("down") then
-        player.y = player.y + 100 * dt
-        player.sy = player.sy - .1 * dt
+        player.y = player.y + player.spd * dt
     end
 end
 
