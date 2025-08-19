@@ -3,26 +3,28 @@ local Ball = require("Ball")
 local Rectangle = require("Rectangle")
 local Config = require("Config")
 
+math.randomseed(os.time())
+local randX = 0
+local randY = 0
+if math.random(0,1) == 0 then
+    randX = -1
+else
+    randX = 1
+end
+if math.random(0,1) == 0 then
+    randY = 0.5
+else
+    randY = -0.5
+end
+
 function love.load()
-    math.randomseed(os.time())
     -- Définir taille écran
     love.window.setMode( 800, 600 )
-    local randX = 0
-    local randY = 0
-    if math.random(0,1) == 0 then
-        randX = -1
-    else
-        randX = 1
-    end
-    if math.random(0,1) == 0 then
-        randY = 0.5
-    else
-        randY = -0.5
-    end
+    
     -- Charger les joueurs
     player1 = Player:new(300, 200, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1")
     player2 = Player:new(300, 200, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2")
-    ball = Ball:new(200, 200, {x=randX,y=randY}, {x=392.5,y=275}, {width=16,height=16})
+    ball = Ball:new(200, 200, {x=0,y=0}, {x=392.5,y=275}, {width=16,height=16})
     leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
     rightGroundRect = Rectangle:new("line", 400, 5, 395, 590)
 end
@@ -39,6 +41,10 @@ local boundaries = {
 function love.keypressed(key, scancode, isinstance)
     if key == "escape" then
         love.event.quit()
+    end
+    if key == "space" then
+        ball.dir.x = randX
+        ball.dir.y = randY
     end
 end
 

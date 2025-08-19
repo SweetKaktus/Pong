@@ -18,8 +18,10 @@ function Entity:move(dt)
     -- Code corrigé où je contraint avec les fonctions du module intégré "math" la position en Y
 
     -- Appliquer le mouvement
-    self.position.y = self.position.y + self.spd * self.dir.y * dt
-    self.position.x = self.position.x + self.spd * self.dir.x * dt
+    if self.dir.y ~= 0 then
+        self.position.y = self.position.y + self.spd * self.dir.y * dt
+        self.position.x = self.position.x + self.spd * self.dir.x * dt
+    end
     -- Contraindre la position Y dans les limites
     self.position.y = math.max(5, math.min(self.position.y, 595 - self.size.height))
     self.position.x = math.max(5, math.min(self.position.x, 795))
