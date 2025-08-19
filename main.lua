@@ -1,78 +1,40 @@
+local Player = require("Player")
+local Ball = require("Ball")
 local Rectangle = require("Rectangle")
+local Config = require("Config")
 
--- Cette fonction me permet de dépiler mes rectangles pour pouvoir les afficher dans la fonction love.graphics.rectangle
--- usage : love.graphics.rectangle(rectUnpack(monRectangle))
-function rectUnpack(rectangle)
-    order = {"mode", "x", "y", "width", "height"}
-    args = {}
-    for _, key in ipairs(order) do
-        table.insert(args, rectangle[key])
+function love.load()
+    math.randomseed(os.time())
+    -- Définir taille écran
+    love.window.setMode( 800, 600 )
+    local randX = 0
+    local randY = 0
+    if math.random(0,1) == 0 then
+        randX = -1
+    else
+        randX = 1
     end
-    return unpack(args)
+    if math.random(0,1) == 0 then
+        randY = 0.5
+    else
+        randY = -0.5
+    end
+    -- Charger les joueurs
+    player1 = Player:new(300, 200, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1")
+    player2 = Player:new(300, 200, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2")
+    ball = Ball:new(200, 200, {x=randX,y=randY}, {x=392.5,y=275}, {width=16,height=16})
+    leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
+    rightGroundRect = Rectangle:new("line", 400, 5, 395, 590)
 end
 
-function checkCollisions(rect1, rect2)
-    rect1Left = rect1.x
-    rect1Right = rect1.x + rect1.width
-    rect1Top = rect1.y
-    rect1Bot = rect1.y + rect1.height
 
-    rect2Left = rect2.x
-    rect2Right = rect2.x + rect2.width
-    rect2Top = rect2.y
-    rect2Bot = rect2.y + rect2.height
+local boundaries = {
+    top = Rectangle:new("line", -5, -5, 1000, 11),
+    bot = Rectangle:new("line", -5, 594, 1000, 11),
+    left = Rectangle:new("line", -5, -5, 11, 700),
+    right = Rectangle:new("line", 795, -5, 11, 700),
     
-
--- Le bloc ci-dessous peut être simplifié pour directement retourner la valeur de la comparaison (cf. plus bas)
-    -- if rect1Left < rect2Right
-    -- and rect1Right > rect2Left
-    -- and rect1Top < rect2Bot
-    -- and rect1Bot > rect2Top
-    -- then
-    --     return true
-    -- end
-    -- return false
-
-    return rect1Left < rect2Right
-    and rect1Right > rect2Left
-    and rect1Top < rect2Bot
-    and rect1Bot > rect2Top
-end
-
-function movePlayer(player, dt)
-    if love.keyboard.isDown("left") then
-        player.x = player.x - 100 * dt
-    end
-    if love.keyboard.isDown("right") then
-        player.x = player.x + 100 * dt
-    end
-    if love.keyboard.isDown("up") then
-        player.y = player.y - 100 * dt
-    end
-    if love.keyboard.isDown("down") then
-        player.y = player.y + 100 * dt
-    end
-end
-
-local monRectangle1 = {
-    mode = "line",
-    x = 100,
-    y = 100,
-    width = 64,
-    height = 128
 }
-
-local monRectangle2 = {
-    mode = "line",
-    x = 200,
-    y = 200,
-    width = 128,
-    height = 64
-}
-
-function love.update(dt)
-    movePlayer(monRectangle1, dt)
-end
 
 function love.keypressed(key, scancode, isinstance)
     if key == "escape" then
@@ -80,12 +42,29 @@ function love.keypressed(key, scancode, isinstance)
     end
 end
 
-function love.draw() 
-    if checkCollisions(monRectangle1, monRectangle2) then
-        love.graphics.setColor({1,0,0})
-    else
-        love.graphics.setColor({0,1,0})
-    end
-    love.graphics.rectangle(rectUnpack(monRectangle1))
-    love.graphics.rectangle(rectUnpack(monRectangle2))
+function love.update(dt)
+    player1:setDirectionBasedOnPlayerNumber()
+    player2:setDirectionBasedOnPlayerNumber()
+    player1:move(dt)
+    player2:move(dt)
+    player1.shape.x = player1.position.x
+    player1.shape.y = player1.position.y
+    player2.shape.x = player2.position.x
+    player2.shape.y = player2.position.y
+    
+    ball:move(dt)
+    ball.shape.x = ball.position.x
+    ball.shape.y = ball.position.y
+    ball:changeDirection(player1.shape)
+    ball:changeDirection(player2.shape)
+    ball:changeDirection(boundaries.top)
+    ball:changeDirection(boundaries.bot)
+end
+
+function love.draw()
+    love.graphics.rectangle(player1.shape:rectUnpack())
+    love.graphics.rectangle(player2.shape:rectUnpack())
+    love.graphics.rectangle(ball.shape:rectUnpack())
+    love.graphics.rectangle(leftGroundRect:rectUnpack())
+    love.graphics.rectangle(rightGroundRect:rectUnpack())
 end

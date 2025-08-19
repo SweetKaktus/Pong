@@ -1,0 +1,29 @@
+Pour faire rebondir la balle selon le bon angle (inverser de haut en bas si collision avec le haut ou le bas ; 
+inverser de gauche à droite si collision avec joueurs) alors je dois, quand il y a collision, vérifier les positions de chaque côté pour
+déterminer la situation
+
+
+Donc je compare la différence de la distance entre chaque côté ?
+
+Admettons : 
+rect1Left - rect2right = 0
+rect1Right - rect2Left = 24
+rect1Top - rect2Bot = 12
+rect1Bot - rect2Top = 23
+
+
+
+
+rect1Left - rect2right = 1112
+rect1Right - rect2Left = 32
+rect1Top - rect2Bot = 3
+rect1TBot - rect2Top = 856
+
+
+
+Reste à faire :
+Dessiner le terrain
+Préparer les bordures (classe Entity)
+Fonction update
+Marquer un but => Reset round
+Systeme de scoring

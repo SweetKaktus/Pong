@@ -15,4 +15,15 @@ function Rectangle:new(mode, x, y, width, height)
     return instance
 end
 
+-- Cette fonction me permet de dépiler mes rectangles pour pouvoir les afficher dans la fonction love.graphics.rectangle
+-- usage : love.graphics.rectangle(entity.shape:rectUnpack())
+function Rectangle:rectUnpack()
+    order = {"mode", "x", "y", "width", "height"}
+    args = {}
+    for _, key in ipairs(order) do
+        table.insert(args, self[key])
+    end
+    return unpack(args)
+end
+
 return Rectangle
