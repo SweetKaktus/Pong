@@ -1,4 +1,5 @@
 local Entity = require("Entity")
+local Audio = require("Audio")
 
 local Ball = setmetatable({}, {__index = Entity})
 
@@ -49,11 +50,14 @@ end
 
 function Ball:changeDirection(target)
     local side = self:checkCollision(target)
+    
     if side == "left" or side == "right" then
         self.dir.x = -self.dir.x
+        love.audio.play(Audio.impact)
     end
     if side == "top" or side == "bot" then
         self.dir.y = -self.dir.y
+        love.audio.play(Audio.impact)
     end
 end
 
@@ -79,7 +83,6 @@ end
 
 function Ball:resetSpd()
     self.spd = self.initSpd
-    print(self.spd)
 end
 
 return Ball

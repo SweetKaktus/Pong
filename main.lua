@@ -3,6 +3,7 @@ local Ball = require("Ball")
 local Rectangle = require("Rectangle")
 local Config = require("Config")
 local UI = require("UI")
+local Audio = require("Audio")
 
 local initBallPosX = 392.5
 local initBallPosY = 275
@@ -37,6 +38,7 @@ function resetBallPosition()
     ball.dir.y = initBallDirY
     ball.position.x = initBallPosX
     ball.position.y = initBallPosY
+    love.audio.play(Audio.win)
 end
 
 function resetRandVars()
@@ -56,6 +58,7 @@ function resetRandVars()
 
     ball:resetInitTime()
     ball:resetSpd()
+    love.audio.play(Audio.startGame)
 
     if Config.win then
         Config.win = false
@@ -91,12 +94,21 @@ function love.load()
     love.window.setMode( Config.screenWidth, Config.screenHeight )
     love.window.setTitle(Config.title)
     love.graphics.setNewFont("Anta-Regular.ttf", 18)
+
+    -- Charger l'audio
+    love.audio.setVolume(0.1)
+    Audio.music:setLooping(true)
+    Audio.music:setVolume(0.06)
+    Audio.startGame:setVolume(0.4)
+    Audio.startGame:setLooping(false)
+    Audio.win:setLooping(false)
+    Audio.marquerPoint:setLooping(false)
+    love.audio.play(Audio.music)
     
     -- Charger les joueurs
     player1 = Player:new(400, 400, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1", 0)
     player2 = Player:new(400, 400, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2", 0)
     ball = Ball:new(200, 1000, 200, {x=initBallDirX,y=initBallDirY}, {x=initBallPosX,y=initBallPosY}, {width=16,height=16})
-    resetBallPosition()
     -- Charger le terrain
     leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
     rightGroundRect = Rectangle:new("line", 400, 5, 395, 590)
@@ -133,10 +145,12 @@ function love.update(dt)
 
     if ball:detectGoal(boundaries.right) then
         increaseScore(player1)
+        love.audio.play(Audio.marquerPoint)
         resetBallPosition()
     end
     if ball:detectGoal(boundaries.left) then
         increaseScore(player2)
+        love.audio.play(Audio.marquerPoint)
         resetBallPosition()
     end
 
