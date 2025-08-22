@@ -15,8 +15,6 @@ function Entity:new(spd, maxSpd, dir, position, size)
 end
 
 function Entity:move(dt)
-    -- Code corrigé où je contraint avec les fonctions du module intégré "math" la position en Y
-
     -- Appliquer le mouvement
     if self.dir.y ~= 0 then
         self.position.y = self.position.y + self.spd * self.dir.y * dt
@@ -26,18 +24,6 @@ function Entity:move(dt)
     self.position.y = math.max(5, math.min(self.position.y, 595 - self.size.height))
     self.position.x = math.max(5, math.min(self.position.x, 800-16-5))
     
-    
-    -- Mes tests : PB => Je fais la vérif après avoir déplacé, il faut la faire avant comme ci-dessus
-    -- -- Fonction pour bouger l'entité dans une certaine direction
-    -- -- MODIFIER LA FONCTION POUR PRENDRE EN COMPTE LE SCREEN WIDT + HEIGHT
-    -- if self.position.y >= 5 and self.position.y <= 590 - 64 then
-    --     self.position.y = self.position.y + self.spd * self.dir.y * dt
-    --     self.position.x = self.position.x + self.spd * self.dir.x * dt
-    -- elseif self.position.y < 5 then
-    --     self.position.y = 5
-    -- elseif self.position.y > 590 - 64 then
-    --     self.position.y = 590 - 64
-    -- end
 end
 
 return Entity

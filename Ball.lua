@@ -2,9 +2,11 @@ local Entity = require("Entity")
 
 local Ball = setmetatable({}, {__index = Entity})
 
-function Ball:new(spd, maxSpd, dir, position, size)
+function Ball:new(spd, maxSpd, initSpd, dir, position, size)
     local instance = Entity:new(spd or 0, maxSpd or 0, dir or {x = 1, y = -0.5}, position or {x = 0, y = 0}, size or {width = 32, height = 32})
     setmetatable(instance, {__index = self})
+    instance.initTime = os.time()
+    instance.initSpd = initSpd or 0
     return instance
 end
 
@@ -63,6 +65,21 @@ function Ball:detectGoal(target)
     else
         return false
     end
+end
+
+function Ball:increaseSpd()
+    if self.spd < self.maxSpd then
+        self.spd = self.spd + (os.time() - self.initTime) / 60
+    end
+end
+
+function Ball:resetInitTime()
+    self.initTime = os.time()
+end
+
+function Ball:resetSpd()
+    self.spd = self.initSpd
+    print(self.spd)
 end
 
 return Ball

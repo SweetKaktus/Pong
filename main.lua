@@ -8,15 +8,17 @@ local initBallPosX = 392.5
 local initBallPosY = 275
 local initBallDirX = 0
 local initBallDirY = 0
+local initTime = os.time()
 
 local randX = 0
 local randY = 0
 
 local player1ScoreText = "Player 1 : "
 local player2ScoreText = "Player 2 : "
-local scoreToWin = 1
+local scoreToWin = 5
 
 function printScore()
+    love.graphics.setNewFont("Anta-Regular.ttf", 22)
     love.graphics.print(player1ScoreText..player1.score, UI.player1ScorePosition.x, UI.player1ScorePosition.y)
     love.graphics.print(player2ScoreText..player2.score, UI.player2ScorePosition.x, UI.player2ScorePosition.y)
 end
@@ -28,8 +30,6 @@ function printWin(player)
     love.graphics.rectangle(tempRect:rectUnpack())
     love.graphics.setColor({1,1,1})
     love.graphics.print({{1,1,0}, "Player "..player.playerNumber.." Wins !"}, Config.screenWidth / 2 - 110, Config.screenHeight / 2 - 128)
-    -- love.graphics.setColor({1,1,1})
-    love.graphics.setNewFont("Anta-Regular.ttf", 18)
 end
 
 function resetBallPosition()
@@ -53,6 +53,10 @@ function resetRandVars()
     end
     ball.dir.x = randX
     ball.dir.y = randY
+
+    ball:resetInitTime()
+    ball:resetSpd()
+
     if Config.win then
         Config.win = false
         resetScore()
@@ -71,6 +75,7 @@ function increaseScore(player)
         -- Ecran de Win !
         player.score = player.score + 1
         Config.win = true
+        print(ball.spd + (os.time() - initTime) * 10)
     end
 end
 
@@ -78,7 +83,7 @@ local boundaries = {
     top = Rectangle:new("line", -5, -5, 1000, 11),
     bot = Rectangle:new("line", -5, 594, 1000, 11),
     left = Rectangle:new("line", -5, -5, 11, 700),
-    right = Rectangle:new("line", 800-32, -5, 300, 700),
+    right = Rectangle:new("line", 800-16, -5, 300, 700),
 }
 
 function love.load()
@@ -88,9 +93,9 @@ function love.load()
     love.graphics.setNewFont("Anta-Regular.ttf", 18)
     
     -- Charger les joueurs
-    player1 = Player:new(300, 200, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1", 0)
-    player2 = Player:new(300, 200, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2", 0)
-    ball = Ball:new(200, 200, {x=initBallDirX,y=initBallDirY}, {x=initBallPosX,y=initBallPosY}, {width=16,height=16})
+    player1 = Player:new(400, 400, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1", 0)
+    player2 = Player:new(400, 400, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2", 0)
+    ball = Ball:new(200, 1000, 200, {x=initBallDirX,y=initBallDirY}, {x=initBallPosX,y=initBallPosY}, {width=16,height=16})
     resetBallPosition()
     -- Charger le terrain
     leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
@@ -118,6 +123,7 @@ function love.update(dt)
     player2.shape.y = player2.position.y
     
     ball:move(dt)
+    ball:increaseSpd()
     ball.shape.x = ball.position.x
     ball.shape.y = ball.position.y
     ball:changeDirection(player1.shape)
