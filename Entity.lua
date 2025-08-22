@@ -24,7 +24,7 @@ function Entity:move(dt)
     end
     -- Contraindre la position Y dans les limites
     self.position.y = math.max(5, math.min(self.position.y, 595 - self.size.height))
-    self.position.x = math.max(5, math.min(self.position.x, 795))
+    self.position.x = math.max(5, math.min(self.position.x, 800-16-5))
     
     
     -- Mes tests : PB => Je fais la vérif après avoir déplacé, il faut la faire avant comme ci-dessus
@@ -38,34 +38,6 @@ function Entity:move(dt)
     -- elseif self.position.y > 590 - 64 then
     --     self.position.y = 590 - 64
     -- end
-end
-
-function Entity:checkCollision(target)
-    local shapeLeft = self.shape.x
-    local shapeRight = self.shape.x + self.shape.width
-    local shapeTop = self.shape.y
-    local shapeBot = self.shape.y + self.shape.height
-
-    local tShapeLeft = target.shape.x
-    local tShapeRight = target.shape.x + target.shape.width
-    local tShapeTop = target.shape.y
-    local tShapeBot = target.shape.y + target.shape.height
-    
-
--- Le bloc ci-dessous peut être simplifié pour directement retourner la valeur de la comparaison (cf. plus bas)
-    -- if rect1Left < rect2Right
-    -- and rect1Right > rect2Left
-    -- and rect1Top < rect2Bot
-    -- and rect1Bot > rect2Top
-    -- then
-    --     return true
-    -- end
-    -- return false
-
-    return shapeLeft < tShapeRight
-    and shapeRight > tShapeLeft
-    and shapeTop < tShapeBot
-    and shapeBot > tShapeTop
 end
 
 return Entity

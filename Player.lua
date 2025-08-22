@@ -2,10 +2,11 @@ local Entity = require("Entity")
 
 local Player = setmetatable({}, {__index = Entity})
 
-function Player:new(spd, maxSpd, dir, position, size, playerNumber)
+function Player:new(spd, maxSpd, dir, position, size, playerNumber, score)
     local instance = Entity:new(spd or 0, maxSpd or 0, dir or {x = 0, y = 0}, position or {x = 0, y = 0}, size or {width = 32, height = 64})
     setmetatable(instance, {__index = self})
     instance.playerNumber = playerNumber or "1"
+    instance.score = score or 0
     return instance
 end
 

@@ -2,49 +2,108 @@ local Player = require("Player")
 local Ball = require("Ball")
 local Rectangle = require("Rectangle")
 local Config = require("Config")
+local UI = require("UI")
 
-math.randomseed(os.time())
+local initBallPosX = 392.5
+local initBallPosY = 275
+local initBallDirX = 0
+local initBallDirY = 0
+
 local randX = 0
 local randY = 0
-if math.random(0,1) == 0 then
-    randX = -1
-else
-    randX = 1
-end
-if math.random(0,1) == 0 then
-    randY = 0.5
-else
-    randY = -0.5
+
+local player1ScoreText = "Player 1 : "
+local player2ScoreText = "Player 2 : "
+local scoreToWin = 1
+
+function printScore()
+    love.graphics.print(player1ScoreText..player1.score, UI.player1ScorePosition.x, UI.player1ScorePosition.y)
+    love.graphics.print(player2ScoreText..player2.score, UI.player2ScorePosition.x, UI.player2ScorePosition.y)
 end
 
-function love.load()
-    -- Définir taille écran
-    love.window.setMode( 800, 600 )
-    
-    -- Charger les joueurs
-    player1 = Player:new(300, 200, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1")
-    player2 = Player:new(300, 200, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2")
-    ball = Ball:new(200, 200, {x=0,y=0}, {x=392.5,y=275}, {width=16,height=16})
-    leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
-    rightGroundRect = Rectangle:new("line", 400, 5, 395, 590)
+function printWin(player)
+    love.graphics.setNewFont("Anta-Regular.ttf", 32)
+    love.graphics.setColor({0,0,0})
+    local tempRect = Rectangle:new("fill", Config.screenWidth / 2 - 110, Config.screenHeight / 2 - 126, 128, 37)
+    love.graphics.rectangle(tempRect:rectUnpack())
+    love.graphics.setColor({1,1,1})
+    love.graphics.print({{1,1,0}, "Player "..player.playerNumber.." Wins !"}, Config.screenWidth / 2 - 110, Config.screenHeight / 2 - 128)
+    -- love.graphics.setColor({1,1,1})
+    love.graphics.setNewFont("Anta-Regular.ttf", 18)
 end
 
+function resetBallPosition()
+    ball.dir.x = initBallDirX
+    ball.dir.y = initBallDirY
+    ball.position.x = initBallPosX
+    ball.position.y = initBallPosY
+end
+
+function resetRandVars()
+    math.randomseed(os.time())
+    if math.random(0,1) == 0 then
+        randX = -1
+    else
+        randX = 1
+    end
+    if math.random(0,1) == 0 then
+        randY = 0.5
+    else
+        randY = -0.5
+    end
+    ball.dir.x = randX
+    ball.dir.y = randY
+    if Config.win then
+        Config.win = false
+        resetScore()
+    end
+end
+
+function resetScore()
+    player1.score = 0
+    player2.score = 0
+end
+
+function increaseScore(player)
+    if player.score < scoreToWin-1  then
+        player.score = player.score + 1
+    else
+        -- Ecran de Win !
+        player.score = player.score + 1
+        Config.win = true
+    end
+end
 
 local boundaries = {
     top = Rectangle:new("line", -5, -5, 1000, 11),
     bot = Rectangle:new("line", -5, 594, 1000, 11),
     left = Rectangle:new("line", -5, -5, 11, 700),
-    right = Rectangle:new("line", 795, -5, 11, 700),
-    
+    right = Rectangle:new("line", 800-32, -5, 300, 700),
 }
+
+function love.load()
+    -- Paramètres Fenètre
+    love.window.setMode( Config.screenWidth, Config.screenHeight )
+    love.window.setTitle(Config.title)
+    love.graphics.setNewFont("Anta-Regular.ttf", 18)
+    
+    -- Charger les joueurs
+    player1 = Player:new(300, 200, {x=0,y=0}, {x=30,y=250}, {width=16,height=64}, "1", 0)
+    player2 = Player:new(300, 200, {x=0,y=0}, {x=800-46,y=250}, {width=16,height=64}, "2", 0)
+    ball = Ball:new(200, 200, {x=initBallDirX,y=initBallDirY}, {x=initBallPosX,y=initBallPosY}, {width=16,height=16})
+    resetBallPosition()
+    -- Charger le terrain
+    leftGroundRect = Rectangle:new("line", 5, 5, 395, 590)
+    rightGroundRect = Rectangle:new("line", 400, 5, 395, 590)
+end
+
 
 function love.keypressed(key, scancode, isinstance)
     if key == "escape" then
         love.event.quit()
     end
-    if key == "space" then
-        ball.dir.x = randX
-        ball.dir.y = randY
+    if key == "space" and ball.dir.x == 0 then
+        resetRandVars()
     end
 end
 
@@ -65,6 +124,17 @@ function love.update(dt)
     ball:changeDirection(player2.shape)
     ball:changeDirection(boundaries.top)
     ball:changeDirection(boundaries.bot)
+
+    if ball:detectGoal(boundaries.right) then
+        increaseScore(player1)
+        resetBallPosition()
+    end
+    if ball:detectGoal(boundaries.left) then
+        increaseScore(player2)
+        resetBallPosition()
+    end
+
+    
 end
 
 function love.draw()
@@ -73,4 +143,12 @@ function love.draw()
     love.graphics.rectangle(ball.shape:rectUnpack())
     love.graphics.rectangle(leftGroundRect:rectUnpack())
     love.graphics.rectangle(rightGroundRect:rectUnpack())
+    printScore()
+    if Config.win then
+        if player1.score == scoreToWin then
+            printWin(player1)
+        else
+            printWin(player2)
+        end
+    end
 end

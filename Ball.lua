@@ -27,9 +27,9 @@ function Ball:checkCollision(target)
     and shapeBot > tShapeTop
     then
         collList = {}
-        collList.left = shapeLeft - tShapeRight
+        collList.left = tShapeRight - shapeLeft
         collList.right = shapeRight - tShapeLeft
-        collList.top = shapeTop - tShapeBot
+        collList.top = tShapeBot - shapeTop
         collList.bot = shapeBot - tShapeTop
         local smallest = math.huge
         local side = nil
@@ -57,10 +57,11 @@ end
 
 function Ball:detectGoal(target)
     local side = self:checkCollision(target)
-    if side == "left" then
+    if side == "right" or side == "left" then
         -- player1 wins
-    elseif side == "right" then
-        -- player2 wins
+        return true
+    else
+        return false
     end
 end
 

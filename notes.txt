@@ -27,3 +27,6 @@ Préparer les bordures (classe Entity)
 Fonction update
 Marquer un but => Reset round
 Systeme de scoring
+
+Power ups
+Vitesse balle + joueurs
